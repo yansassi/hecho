@@ -102,3 +102,16 @@ export interface HeroBanner {
   created_at: string;
   updated_at: string;
 }
+
+export interface Product {
+  id: string;
+  codigo: string;
+  nome: string;
+  info: string;
+  quantidade: string;
+  codigo_barra: string;
+  categoria: string;
+  image_url: string;
+  created_at: string;
+  updated_at: string;
+}

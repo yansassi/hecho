@@ -8,19 +8,21 @@ import {
   Phone, 
   Grid,
   Home,
-  User
+  User,
+  Package
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HeroBannersAdmin from './HeroBannersAdmin';
 import CategoriesAdmin from './CategoriesAdmin';
 import TestimonialsAdmin from './TestimonialsAdmin';
 import ContactInfoAdmin from './ContactInfoAdmin';
+import ProductsAdmin from './ProductsAdmin';
 
 interface AdminPanelProps {
   onNavigate?: (page: 'home' | 'about' | 'catalog' | 'login' | 'admin') => void;
 }
 
-type AdminSection = 'dashboard' | 'hero-banners' | 'categories' | 'testimonials' | 'contact-info';
+type AdminSection = 'dashboard' | 'hero-banners' | 'categories' | 'products' | 'testimonials' | 'contact-info';
 
 const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
   const [currentSection, setCurrentSection] = useState<AdminSection>('dashboard');
@@ -64,6 +66,12 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
       description: 'Gerenciar categorias de produtos'
     },
     {
+      id: 'products' as AdminSection,
+      label: 'Produtos',
+      icon: Package,
+      description: 'Gerenciar catálogo de produtos'
+    },
+    {
       id: 'testimonials' as AdminSection,
       label: 'Depoimentos',
       icon: MessageSquare,
@@ -83,6 +91,8 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
         return <HeroBannersAdmin />;
       case 'categories':
         return <CategoriesAdmin />;
+      case 'products':
+        return <ProductsAdmin />;
       case 'testimonials':
         return <TestimonialsAdmin />;
       case 'contact-info':

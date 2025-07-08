@@ -15,9 +15,30 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const allProducts = useMemo(() => getAllProducts(), []);
-  const categories = useMemo(() => getProductCategories(), []);
+  // Carregar produtos e categorias do Supabase
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [productsData, categoriesData] = await Promise.all([
+          getAllProducts(),
+          getProductCategories()
+        ]);
+        setAllProducts(productsData);
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   // Escutar evento customizado para filtrar produto específico
   useEffect(() => {
@@ -62,6 +83,38 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     setShowMobileFilters(false);
   };
   const ProductCard = ({ product }: { product: Product }) => {
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => onNavigate?.('home')}
+                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                {t('catalog.back')}
+              </button>
+              <div>
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900">{t('catalog.title')}</h1>
+                <p className="text-sm md:text-base text-gray-600 mt-1">
+                  {t('catalog.subtitle')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-yellow-500"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
     const productImage = getProductImage(product);
 
     if (viewMode === 'list') {

@@ -1,5 +1,10 @@
 // Sistema avançado de imagens únicas para cada produto
-export const getProductImage = (product: { codigo: string; nome: string; categoria: string; info: string }): string => {
+export const getProductImage = (product: { codigo: string; nome: string; categoria: string; info: string; image_url?: string }): string => {
+  // Se o produto tem uma imagem personalizada, usar ela primeiro
+  if (product.image_url && product.image_url.trim() !== '') {
+    return product.image_url;
+  }
+  
   const { codigo, nome, categoria, info } = product;
   const nomeUpper = nome.toUpperCase();
   const infoUpper = info.toUpperCase();
