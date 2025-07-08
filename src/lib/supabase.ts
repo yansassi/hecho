@@ -27,6 +27,18 @@ export interface Testimonial {
   updated_at: string;
 }
 
+export interface Brand {
+  id: string;
+  name: string;
+  logo_url: string;
+  category: string;
+  description: string;
+  website_url: string;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
 export interface Category {
   id: string;
   name: string;
@@ -69,6 +81,24 @@ export interface ContactInfo {
   google_maps_url: string;
   google_maps_embed_url: string;
   is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HeroBanner {
+  id: string;
+  title_pt: string;
+  title_es: string;
+  subtitle_pt: string;
+  subtitle_es: string;
+  highlight_pt: string;
+  highlight_es: string;
+  cta_text_pt: string;
+  cta_text_es: string;
+  cta_action: string;
+  image_url: string;
+  is_active: boolean;
+  display_order: number;
   created_at: string;
   updated_at: string;
 }

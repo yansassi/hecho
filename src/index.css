@@ -1,3 +1,106 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Animação para transição de conteúdo */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out;
+}
+
+/* Remover cursor de texto de todos os elementos por padrão */
+* {
+  cursor: default;
+}
+
+/* Aplicar cursor pointer apenas onde necessário */
+button,
+a,
+[role="button"],
+.cursor-pointer,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+nav a,
+header a,
+header button,
+.nav-item {
+  cursor: pointer !important;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Cursor de texto apenas em campos de entrada onde é necessário */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+input[type="number"],
+textarea,
+[contenteditable="true"] {
+  cursor: text !important;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Permitir seleção de texto em conteúdo relevante, mas sem cursor de texto */
+p,
+h1, h2, h3, h4, h5, h6,
+span,
+div,
+article,
+section,
+.content,
+.description,
+li {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  cursor: default; /* Mantém cursor padrão, não de texto */
+}
+
+/* Remover seleção de texto em elementos de navegação e interativos */
+nav,
+header,
+.menu,
+.navigation,
+button *,
+a *,
+[role="button"] * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Remover outline de foco padrão e adicionar um personalizado */
+button:focus,
+a:focus,
+[role="button"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Garantir que elementos interativos sejam clicáveis */
+button,
+a,
+[role="button"] {
+  pointer-events: auto;
+}

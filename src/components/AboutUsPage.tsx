@@ -206,7 +206,6 @@ const AboutUsPage = () => {
 
           <div className="max-w-5xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('about.location')}</h3>
               <div className="w-full h-96 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 mb-6">
                 <iframe 
                   src={contactInfo?.googleMapsEmbedUrl || "https://www.google.com/maps/d/embed?mid=14vRBlp-WKFtLojsqiPuiBG6258rtzDw&ehbc=2E312F"} 

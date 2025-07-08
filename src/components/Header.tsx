@@ -3,7 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface HeaderProps {
-  onNavigate?: (page: 'home' | 'about' | 'catalog' | 'contact-admin') => void;
+  onNavigate?: (page: 'home' | 'about' | 'catalog' | 'login' | 'admin') => void;
 }
 
 const Header = ({ onNavigate }: HeaderProps) => {

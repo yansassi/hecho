@@ -3,7 +3,11 @@ import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube } from 'lucide
 import { useLanguage } from '../contexts/LanguageContext';
 import { useContactInfo } from '../hooks/useContactInfo';
 
-const Footer = () => {
+interface FooterProps {
+  onNavigate?: (page: 'home' | 'about' | 'catalog' | 'login' | 'admin') => void;
+}
+
+const Footer = ({ onNavigate }: FooterProps) => {
   const { t } = useLanguage();
   const { contactInfo } = useContactInfo();
 
@@ -17,7 +21,8 @@ const Footer = () => {
     { name: t('nav.inicio'), href: '#inicio' },
     { name: t('nav.catalogo'), href: '#catalogo' },
     { name: t('nav.sobre'), href: '#sobre' },
-    { name: t('contact.title'), href: '#contato' }
+    { name: t('contact.title'), href: '#contato' },
+    { name: 'Login', href: '#login', action: () => onNavigate?.('login') }
   ];
 
   const categories = [
@@ -71,6 +76,12 @@ const Footer = () => {
                 <li key={index}>
                   <a
                     href={link.href}
+                    onClick={(e) => {
+                      if (link.action) {
+                        e.preventDefault();
+                        link.action();
+                      }
+                    }}
                     className="text-gray-400 hover:text-yellow-400 transition-colors"
                   >
                     {link.name}
