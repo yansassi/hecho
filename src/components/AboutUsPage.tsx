@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Award, Users, Clock, Shield, MapPin, Phone, Mail, Star } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTestimonials } from '../hooks/useTestimonials';
+import { useContactInfo } from '../hooks/useContactInfo';
 
 const AboutUsPage = () => {
   const { t, language } = useLanguage();
+  const { testimonials, loading: testimonialsLoading, error: testimonialsError } = useTestimonials();
+  const { contactInfo } = useContactInfo();
 
   const stats = [
     {
@@ -65,26 +69,6 @@ const AboutUsPage = () => {
     }
   ];
 
-  const testimonials = [
-    {
-      name: t('testimonial.joao.name'),
-      role: t('testimonial.joao.role'),
-      content: t('testimonial.joao.content'),
-      rating: 5
-    },
-    {
-      name: t('testimonial.maria.name'),
-      role: t('testimonial.maria.role'),
-      content: t('testimonial.maria.content'),
-      rating: 5
-    },
-    {
-      name: t('testimonial.carlos.name'),
-      role: t('testimonial.carlos.role'),
-      content: t('testimonial.carlos.content'),
-      rating: 5
-    }
-  ];
 
   // Texto da história em espanhol e português
   const historyText = {
@@ -225,7 +209,7 @@ const AboutUsPage = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('about.location')}</h3>
               <div className="w-full h-96 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 mb-6">
                 <iframe 
-                  src="https://www.google.com/maps/d/embed?mid=14vRBlp-WKFtLojsqiPuiBG6258rtzDw&ehbc=2E312F" 
+                  src={contactInfo?.googleMapsEmbedUrl || "https://www.google.com/maps/d/embed?mid=14vRBlp-WKFtLojsqiPuiBG6258rtzDw&ehbc=2E312F"} 
                   width="100%" 
                   height="100%" 
                   style={{ border: 0, minHeight: '384px' }}
@@ -240,7 +224,7 @@ const AboutUsPage = () => {
               {/* Fallback link if iframe doesn't load */}
               <div className="text-center">
                 <a 
-                  href="https://www.google.com/maps/d/viewer?mid=14vRBlp-WKFtLojsqiPuiBG6258rtzDw&ehbc=2E312F"
+                  href={contactInfo?.googleMapsUrl || "https://www.google.com/maps/d/viewer?mid=14vRBlp-WKFtLojsqiPuiBG6258rtzDw&ehbc=2E312F"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
@@ -260,36 +244,36 @@ const AboutUsPage = () => {
                     <MapPin className="h-6 w-6 text-yellow-400 mx-auto" />
                     <div className="text-gray-300">
                       <p className="font-semibold">{t('about.address')}</p>
-                      <p className="text-sm">{t('common.address.street')}</p>
-                      <p className="text-sm">{t('common.address.district')}</p>
+                      <p className="text-sm">{contactInfo?.addressStreet || t('common.address.street')}</p>
+                      <p className="text-sm">{contactInfo?.addressDistrict || t('common.address.district')}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Phone className="h-6 w-6 text-yellow-400 mx-auto" />
                     <div className="text-gray-300">
                       <p className="font-semibold">{t('about.phone')}</p>
-                      <p className="text-sm">(11) 3456-7890</p>
-                      <p className="text-sm">(11) 98765-4321</p>
+                      <p className="text-sm">{contactInfo?.phonePrimary || '(11) 3456-7890'}</p>
+                      <p className="text-sm">{contactInfo?.phoneSecondary || '(11) 98765-4321'}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Clock className="h-6 w-6 text-yellow-400 mx-auto" />
                     <div className="text-gray-300">
                       <p className="font-semibold">{t('about.schedule')}</p>
-                      <p className="text-sm">{t('common.schedule.weekdays')}</p>
-                      <p className="text-sm">{t('common.schedule.saturday')}</p>
+                      <p className="text-sm">{contactInfo?.scheduleWeekdays || t('common.schedule.weekdays')}</p>
+                      <p className="text-sm">{contactInfo?.scheduleSaturday || t('common.schedule.saturday')}</p>
                     </div>
                   </div>
                 </div>
                 <div className="mt-6 flex justify-center space-x-4">
                   <a
-                    href="tel:1134567890"
+                    href={`tel:${contactInfo?.phonePrimary?.replace(/\D/g, '') || '1134567890'}`}
                     className="bg-yellow-500 hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg transition-colors"
                   >
                     {t('about.call')}
                   </a>
                   <a
-                    href="https://wa.me/5511987654321"
+                    href={`https://wa.me/${contactInfo?.phoneWhatsapp || '5511987654321'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-semibold py-2 px-6 rounded-lg transition-colors"
@@ -361,22 +345,57 @@ const AboutUsPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white p-8 rounded-2xl shadow-lg">
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  ))}
+          {testimonialsLoading ? (
+            <div className="grid md:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white p-8 rounded-2xl shadow-lg animate-pulse">
+                  <div className="flex items-center mb-4">
+                    <div className="flex space-x-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <div key={star} className="h-5 w-5 bg-gray-200 rounded"></div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2 mb-6">
+                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                  </div>
+                  <div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                  </div>
                 </div>
-                <p className="text-gray-600 mb-6 italic">"{testimonial.content}"</p>
-                <div>
-                  <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                  <div className="text-sm text-gray-500">{testimonial.role}</div>
-                </div>
+              ))}
+            </div>
+          ) : testimonialsError ? (
+            <div className="text-center py-8">
+              <div className="text-red-500 mb-4">
+                <p className="text-lg font-semibold">Erro ao carregar depoimentos</p>
+                <p className="text-sm">{testimonialsError}</p>
               </div>
-            ))}
-          </div>
+              <p className="text-gray-600">
+                {t('about.testimonials.error')}
+              </p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8">
+              {testimonials.slice(0, 6).map((testimonial) => (
+                <div key={testimonial.id} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                  <div className="flex items-center mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-gray-600 mb-6 italic">"{testimonial.content}"</p>
+                  <div>
+                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                    <div className="text-sm text-gray-500">{testimonial.role}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

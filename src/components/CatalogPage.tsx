@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Filter, Grid, List, Package, ArrowLeft } from 'lucide-react';
+import { Search, Filter, Grid, List, Package, ArrowLeft, X } from 'lucide-react';
 import { getAllProducts, getProductCategories } from '../data/catalogData';
 import { Product, ProductCategory } from '../types/Product';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -14,6 +14,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const allProducts = useMemo(() => getAllProducts(), []);
   const categories = useMemo(() => getProductCategories(), []);
@@ -56,14 +57,18 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     return filtered;
   }, [allProducts, selectedCategory, searchTerm]);
 
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setShowMobileFilters(false);
+  };
   const ProductCard = ({ product }: { product: Product }) => {
     const productImage = getProductImage(product);
 
     if (viewMode === 'list') {
       return (
-        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 p-6">
-          <div className="flex gap-6">
-            <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 p-4">
+          <div className="flex gap-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
               <img
                 src={productImage}
                 alt={product.nome}
@@ -73,36 +78,36 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                   target.style.display = 'none';
                   const parent = target.parentElement;
                   if (parent) {
-                    parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div>';
+                    parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-6 w-6 md:h-8 md:w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div>';
                   }
                 }}
               />
             </div>
             <div className="flex-1">
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-2">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 hover:text-yellow-600 transition-colors">
+                  <h3 className="text-sm md:text-lg font-bold text-gray-900 hover:text-yellow-600 transition-colors line-clamp-2">
                     {product.nome}
                   </h3>
-                  <p className="text-sm text-gray-500 font-mono">{product.codigo}</p>
+                  <p className="text-xs md:text-sm text-gray-500 font-mono">{product.codigo}</p>
                 </div>
-                <div className="text-right">
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                <div className="text-left md:text-right mt-1 md:mt-0">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium inline-block">
                     {product.categoria}
                   </span>
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 text-xs md:text-sm text-gray-600">
                 <div>
                   <span className="font-medium">{t('catalog.info')}</span> {product.info}
                 </div>
                 <div>
                   <span className="font-medium">{t('catalog.quantity')}</span> {product.quantidade}
                 </div>
-                <div className="col-span-2">
+                <div className="md:col-span-2">
                   <span className="font-medium">{t('catalog.barcode')}</span> 
-                  <span className="font-mono ml-1">{product.codigoBarra}</span>
+                  <span className="font-mono ml-1 text-xs">{product.codigoBarra}</span>
                 </div>
               </div>
             </div>
@@ -113,7 +118,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
 
     return (
       <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden">
-        <div className="relative h-32 bg-gray-100 overflow-hidden">
+        <div className="relative h-24 md:h-32 bg-gray-100 overflow-hidden">
           <img
             src={productImage}
             alt={product.nome}
@@ -123,20 +128,20 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               target.style.display = 'none';
               const parent = target.parentElement;
               if (parent) {
-                parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div>';
+                parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-8 w-8 md:h-12 md:w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div>';
               }
             }}
           />
-          <div className="absolute top-2 right-2">
-            <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+          <div className="absolute top-1 right-1 md:top-2 md:right-2">
+            <span className="bg-blue-500 text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-xs font-medium">
               {product.categoria}
             </span>
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-3 md:p-4">
           <div className="mb-2">
-            <h3 className="text-sm font-bold text-gray-900 hover:text-yellow-600 transition-colors line-clamp-2 min-h-[2.5rem]">
+            <h3 className="text-xs md:text-sm font-bold text-gray-900 hover:text-yellow-600 transition-colors line-clamp-2 min-h-[2rem] md:min-h-[2.5rem]">
               {product.nome}
             </h3>
             <p className="text-xs text-gray-500 font-mono">{product.codigo}</p>
@@ -151,7 +156,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             </div>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-100">
             <div className="text-xs text-gray-500 font-mono truncate">
               {product.codigoBarra}
             </div>
@@ -165,7 +170,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-4">
               <button
@@ -176,14 +181,14 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                 {t('catalog.back')}
               </button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">{t('catalog.title')}</h1>
-                <p className="text-gray-600 mt-1">
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900">{t('catalog.title')}</h1>
+                <p className="text-sm md:text-base text-gray-600 mt-1">
                   {t('catalog.subtitle')}
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
@@ -191,9 +196,18 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                   placeholder={t('catalog.search')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent w-64"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent w-48 md:w-64"
                 />
               </div>
+              
+              {/* Mobile Filter Button */}
+              <button
+                onClick={() => setShowMobileFilters(true)}
+                className="md:hidden flex items-center px-3 py-2 bg-gray-100 rounded-lg"
+              >
+                <Filter className="h-4 w-4 mr-1" />
+                <span className="text-sm">{t('catalog.categories')}</span>
+              </button>
               
               <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
                 <button
@@ -214,10 +228,51 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Mobile Filters Overlay */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden">
+          <div className="fixed inset-y-0 left-0 w-80 bg-white shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">{t('catalog.categories')}</h3>
+              <button
+                onClick={() => setShowMobileFilters(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-4 space-y-2 max-h-screen overflow-y-auto">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategorySelect(category.id)}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    selectedCategory === category.id
+                      ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">{category.displayName}</span>
+                    <span className={`text-sm px-2 py-1 rounded-full ${
+                      selectedCategory === category.id
+                        ? 'bg-yellow-200 text-yellow-800'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {category.count}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         <div className="flex gap-8">
           {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-64 flex-shrink-0 hidden md:block">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-24">
               <div className="flex items-center mb-6">
                 <Filter className="h-5 w-5 text-gray-600 mr-2" />
@@ -254,7 +309,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
           {/* Products Grid/List */}
           <div className="flex-1">
             <div className="mb-6 flex justify-between items-center">
-              <p className="text-gray-600">
+              <p className="text-sm md:text-base text-gray-600">
                 {t('catalog.showing').replace('{count}', filteredProducts.length.toString())}
                 {selectedCategory !== 'all' && (
                   <span> {t('catalog.in')} {categories.find(c => c.id === selectedCategory)?.displayName}</span>
@@ -280,7 +335,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             ) : (
               <div className={
                 viewMode === 'grid' 
-                  ? 'grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+                  ? 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6'
                   : 'space-y-4'
               }>
                 {filteredProducts.map((product) => (

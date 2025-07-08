@@ -79,6 +79,7 @@ export const translations = {
     'about.agility.desc': 'Entendemos que el tiempo es importante. Por eso, ofrecemos soluciones rápidas sin comprometer la calidad.',
     'about.testimonials': 'Lo que Dicen Nuestros Clientes',
     'about.testimonials.desc': 'La satisfacción de nuestros clientes es nuestro mayor logro.',
+    'about.testimonials.error': 'No fue posible cargar los testimonios en este momento.',
     
     // Brands
     'brands.title': 'Marcas Asociadas',
@@ -240,6 +241,7 @@ export const translations = {
     'about.agility.desc': 'Entendemos que tempo é importante. Por isso, oferecemos soluções rápidas sem comprometer a qualidade.',
     'about.testimonials': 'O que Nossos Clientes Dizem',
     'about.testimonials.desc': 'A satisfação dos nossos clientes é nossa maior conquista.',
+    'about.testimonials.error': 'Não foi possível carregar os depoimentos no momento.',
     
     // Brands
     'brands.title': 'Marcas Parceiras',

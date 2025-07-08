@@ -1,9 +1,11 @@
 import React from 'react';
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useContactInfo } from '../hooks/useContactInfo';
 
 const Footer = () => {
   const { t } = useLanguage();
+  const { contactInfo } = useContactInfo();
 
   const socialLinks = [
     { icon: Facebook, href: '#', label: 'Facebook' },
@@ -35,7 +37,7 @@ const Footer = () => {
           <div className="space-y-6">
             <div>
               <img 
-                src="/hecho/logo.png" 
+                src="/logo.png" 
                 alt="HECHO - Soluções Rápidas" 
                 className="h-12 w-auto mb-4"
               />
@@ -102,30 +104,30 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
                 <div className="text-gray-400">
-                  <p>{t('common.address.street')}</p>
-                  <p>{t('common.address.district')}</p>
-                  <p>CEP: 01234-567</p>
+                  <p>{contactInfo?.addressStreet || t('common.address.street')}</p>
+                  <p>{contactInfo?.addressDistrict || t('common.address.district')}</p>
+                  <p>CEP: {contactInfo?.addressZipcode || '01234-567'}</p>
                 </div>
               </div>
               
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-yellow-400 flex-shrink-0" />
                 <div className="text-gray-400">
-                  <p>(11) 3456-7890</p>
-                  <p>(11) 98765-4321</p>
+                  <p>{contactInfo?.phonePrimary || '(11) 3456-7890'}</p>
+                  <p>{contactInfo?.phoneSecondary || '(11) 98765-4321'}</p>
                 </div>
               </div>
               
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-yellow-400 flex-shrink-0" />
-                <p className="text-gray-400">contato@hecho.com.br</p>
+                <p className="text-gray-400">{contactInfo?.emailContact || 'contato@hecho.com.br'}</p>
               </div>
               
               <div className="flex items-start space-x-3">
                 <Clock className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
                 <div className="text-gray-400">
-                  <p>{t('common.schedule.weekdays')}</p>
-                  <p>{t('common.schedule.saturday')}</p>
+                  <p>{contactInfo?.scheduleWeekdays || t('common.schedule.weekdays')}</p>
+                  <p>{contactInfo?.scheduleSaturday || t('common.schedule.saturday')}</p>
                 </div>
               </div>
             </div>

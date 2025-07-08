@@ -3,7 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface HeaderProps {
-  onNavigate?: (page: 'home' | 'about' | 'catalog') => void;
+  onNavigate?: (page: 'home' | 'about' | 'catalog' | 'contact-admin') => void;
 }
 
 const Header = ({ onNavigate }: HeaderProps) => {
@@ -35,7 +35,7 @@ const Header = ({ onNavigate }: HeaderProps) => {
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center cursor-pointer" onClick={() => onNavigate?.('home')}>
             <img 
-              src="/hecho/logo.png" 
+              src="/logo.png" 
               alt="HECHO - Soluções Rápidas" 
               className="h-12 w-auto"
             />

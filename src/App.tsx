@@ -10,9 +10,10 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AboutUsPage from './components/AboutUsPage';
 import CatalogPage from './components/CatalogPage';
+import ContactInfoAdmin from './components/ContactInfoAdmin';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'catalog'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'catalog' | 'contact-admin'>('home');
 
   return (
     <LanguageProvider>
@@ -33,6 +34,14 @@ function App() {
           </>
         )}
 
+        {currentPage === 'contact-admin' && (
+          <>
+            <Header onNavigate={setCurrentPage} />
+            <ContactInfoAdmin />
+            <Footer />
+          </>
+        )}
+
         {currentPage === 'home' && (
           <>
             <Header onNavigate={setCurrentPage} />
@@ -41,7 +50,6 @@ function App() {
             <Brands />
             <FeaturedProducts onNavigate={setCurrentPage} />
             <About />
-            <Contact />
             <Footer />
           </>
         )}

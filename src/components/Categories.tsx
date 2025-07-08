@@ -1,60 +1,47 @@
 import React from 'react';
-import { Wrench, Droplet, Zap, Package } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useCategories } from '../hooks/useCategories';
 
 const Categories = () => {
   const { t } = useLanguage();
+  const { categories, loading } = useCategories();
 
-  const categories = [
-    {
-      icon: Wrench,
-      title: t('categories.ferragens'),
-      description: t('categories.ferragens.desc'),
-      image: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=600',
-      items: [
-        t('categories.ferragens.item1'),
-        t('categories.ferragens.item2'),
-        t('categories.ferragens.item3'),
-        t('categories.ferragens.item4')
-      ]
-    },
-    {
-      icon: Droplet,
-      title: t('categories.encanamento'),
-      description: t('categories.encanamento.desc'),
-      image: 'https://images.pexels.com/photos/8293641/pexels-photo-8293641.jpeg?auto=compress&cs=tinysrgb&w=600',
-      items: [
-        t('categories.encanamento.item1'),
-        t('categories.encanamento.item2'),
-        t('categories.encanamento.item3'),
-        t('categories.encanamento.item4')
-      ]
-    },
-    {
-      icon: Zap,
-      title: t('categories.eletrica'),
-      description: t('categories.eletrica.desc'),
-      image: 'https://images.pexels.com/photos/257736/pexels-photo-257736.jpeg?auto=compress&cs=tinysrgb&w=600',
-      items: [
-        t('categories.eletrica.item1'),
-        t('categories.eletrica.item2'),
-        t('categories.eletrica.item3'),
-        t('categories.eletrica.item4')
-      ]
-    },
-    {
-      icon: Package,
-      title: t('categories.bazar'),
-      description: t('categories.bazar.desc'),
-      image: 'https://images.pexels.com/photos/4239146/pexels-photo-4239146.jpeg?auto=compress&cs=tinysrgb&w=600',
-      items: [
-        t('categories.bazar.item1'),
-        t('categories.bazar.item2'),
-        t('categories.bazar.item3'),
-        t('categories.bazar.item4')
-      ]
-    }
-  ];
+  // Função para obter o componente do ícone dinamicamente
+  const getIconComponent = (iconName: string) => {
+    const IconComponent = (LucideIcons as any)[iconName];
+    return IconComponent || LucideIcons.Package;
+  };
+
+  if (loading) {
+    return (
+      <section id="categorias" className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="h-10 bg-gray-200 rounded w-1/3 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded w-2/3 mx-auto animate-pulse"></div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
+                <div className="h-48 bg-gray-200"></div>
+                <div className="p-6">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-3 bg-gray-200 rounded w-4/6"></div>
+                    <div className="h-3 bg-gray-200 rounded w-3/6"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="categorias" className="py-20 bg-gray-50">
@@ -70,10 +57,10 @@ const Categories = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {categories.map((category, index) => {
-            const IconComponent = category.icon;
+            const IconComponent = getIconComponent(category.iconName);
             return (
               <div
-                key={index}
+                key={category.id}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group overflow-hidden"
               >
                 <div className="relative h-48 overflow-hidden">
