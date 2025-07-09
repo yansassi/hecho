@@ -127,6 +127,10 @@ export const translations = {
     'catalog.qty': 'Cant:',
     'catalog.quantity': 'Cantidad:',
     'catalog.barcode': 'Código de Barras:',
+    'catalog.loadMore': 'Cargar Más',
+    'catalog.remaining': 'restantes',
+    'catalog.of': 'de',
+    'catalog.products': 'productos',
     
     // Common
     'common.address.street': 'Calle de las Herramientas, 123',
@@ -289,6 +293,10 @@ export const translations = {
     'catalog.qty': 'Qtd:',
     'catalog.quantity': 'Quantidade:',
     'catalog.barcode': 'Código de Barras:',
+    'catalog.loadMore': 'Carregar Mais',
+    'catalog.remaining': 'restantes',
+    'catalog.of': 'de',
+    'catalog.products': 'produtos',
     
     // Common
     'common.address.street': 'Rua das Ferramentas, 123',

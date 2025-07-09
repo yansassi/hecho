@@ -14,6 +14,7 @@ interface HeroBannerForm {
   cta_text_es: string;
   cta_action: string;
   image_url: string;
+  mobile_image_url: string;
   display_order: number;
   is_active: boolean;
 }
@@ -33,6 +34,7 @@ const HeroBannersAdmin = () => {
     cta_text_es: '',
     cta_action: 'catalog',
     image_url: '',
+    mobile_image_url: '',
     display_order: 0,
     is_active: true
   });
@@ -50,6 +52,7 @@ const HeroBannersAdmin = () => {
       cta_text_es: '',
       cta_action: 'catalog',
       image_url: '',
+      mobile_image_url: '',
       display_order: 0,
       is_active: true
     });
@@ -124,6 +127,7 @@ const HeroBannersAdmin = () => {
         cta_text_es: data.cta_text_es,
         cta_action: data.cta_action,
         image_url: data.image_url,
+        mobile_image_url: data.mobile_image_url || '',
         display_order: data.display_order,
         is_active: data.is_active
       });
@@ -283,9 +287,9 @@ const HeroBannersAdmin = () => {
           </div>
 
           {/* Configurações Gerais */}
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">URL da Imagem</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">URL da Imagem (Desktop)</label>
               <input
                 type="url"
                 value={formData.image_url}
@@ -297,7 +301,7 @@ const HeroBannersAdmin = () => {
                 <div className="mt-2">
                   <img 
                     src={formData.image_url} 
-                    alt="Preview" 
+                    alt="Preview Desktop" 
                     className="w-full h-20 object-cover rounded-lg"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -308,6 +312,32 @@ const HeroBannersAdmin = () => {
               )}
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">URL da Imagem (Mobile)</label>
+              <input
+                type="url"
+                value={formData.mobile_image_url}
+                onChange={(e) => setFormData({ ...formData, mobile_image_url: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://... (opcional - usa desktop se vazio)"
+              />
+              {formData.mobile_image_url && (
+                <div className="mt-2">
+                  <img 
+                    src={formData.mobile_image_url} 
+                    alt="Preview Mobile" 
+                    className="w-full h-20 object-cover rounded-lg"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Ação do Botão</label>
               <select
@@ -405,15 +435,34 @@ const HeroBannersAdmin = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <img 
-                      src={banner.image} 
-                      alt={banner.title}
-                      className="h-12 w-20 object-cover rounded-lg"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
+                    <div className="flex gap-2">
+                      <div className="text-center">
+                        <img 
+                          src={banner.image} 
+                          alt={`${banner.title} - Desktop`}
+                          className="h-12 w-16 object-cover rounded-lg"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                        <span className="text-xs text-gray-500">Desktop</span>
+                      </div>
+                      {banner.mobileImage && banner.mobileImage !== banner.image && (
+                        <div className="text-center">
+                          <img 
+                            src={banner.mobileImage} 
+                            alt={`${banner.title} - Mobile`}
+                            className="h-12 w-16 object-cover rounded-lg"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                            }}
+                          />
+                          <span className="text-xs text-gray-500">Mobile</span>
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button

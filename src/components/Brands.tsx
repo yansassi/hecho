@@ -57,7 +57,7 @@ const Brands = () => {
           {brands.map((brand, index) => (
             <div
               key={index}
-              className="group bg-gray-50 rounded-xl p-6 hover:bg-yellow-50 transition-all duration-300 hover:shadow-lg"
+              className="group bg-gray-50 rounded-xl p-6 hover:bg-yellow-50 transition-all duration-300 hover:shadow-lg w-full"
             >
               <div className="aspect-video bg-white rounded-lg overflow-hidden mb-4 shadow-sm">
                 <img

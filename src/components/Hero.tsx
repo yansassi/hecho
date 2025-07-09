@@ -79,19 +79,25 @@ const Hero = ({ onNavigate }: HeroProps) => {
   const currentBanner = banners[currentSlide];
 
   return (
-    <section id="inicio" className="relative h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
+    <section id="inicio" className="relative h-64 sm:h-80 md:h-[500px] lg:h-[600px] overflow-hidden w-full">
       {/* Container do Banner */}
       <div className="relative w-full h-full">
         {/* Imagem de Fundo */}
         <div className="absolute inset-0">
-          <img
-            src={currentBanner.image}
-            alt={currentBanner.title}
-            className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
-            key={currentSlide}
-          />
+          <picture>
+            <source 
+              media="(max-width: 767px)" 
+              srcSet={currentBanner.mobileImage}
+            />
+            <img
+              src={currentBanner.image}
+              alt={currentBanner.title}
+              className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
+              key={currentSlide}
+            />
+          </picture>
           {/* Overlay escuro para melhor legibilidade */}
-          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent md:bg-black/50"></div>
         </div>
 
         {/* Conteúdo Sobreposto */}
@@ -99,29 +105,29 @@ const Hero = ({ onNavigate }: HeroProps) => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="max-w-3xl">
               <div className="space-y-6 animate-fade-in" key={`content-${currentSlide}`}>
-                <h1 className="text-4xl lg:text-6xl font-bold leading-tight text-white">
+                <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl font-bold leading-tight text-white">
                   {currentBanner.title}
                   {currentBanner.highlight && (
                     <span className="block text-yellow-400">{currentBanner.highlight}</span>
                   )}
                 </h1>
-                <p className="text-xl lg:text-2xl text-gray-200 max-w-2xl">
+                <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-gray-200 max-w-2xl leading-relaxed">
                   {currentBanner.subtitle}
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <div className="flex flex-row gap-2 sm:gap-4 pt-2 sm:pt-4">
                   <button
                     onClick={() => handleCTAClick(currentBanner.ctaAction)}
-                    className="inline-flex items-center justify-center px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-black font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-2 sm:px-8 sm:py-4 bg-yellow-500 hover:bg-yellow-400 text-black font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-xs sm:text-base"
                   >
                     {currentBanner.ctaText}
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
                   <a
                     href="#produtos"
-                    className="inline-flex items-center justify-center px-8 py-4 border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-semibold rounded-lg transition-all duration-200"
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-2 sm:px-8 sm:py-4 border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-semibold rounded-lg transition-all duration-200 text-xs sm:text-base"
                   >
-                    <ShoppingBag className="mr-2 h-5 w-5" />
+                    <ShoppingBag className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     {t('hero.featuredProducts')}
                   </a>
                 </div>
@@ -136,33 +142,33 @@ const Hero = ({ onNavigate }: HeroProps) => {
             <div className="absolute inset-y-0 left-0 flex items-center z-20">
               <button
                 onClick={prevSlide}
-                className="ml-4 p-3 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all duration-200 backdrop-blur-sm hover:scale-110 active:scale-95 shadow-lg"
+                className="ml-2 sm:ml-4 p-2 sm:p-3 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all duration-200 backdrop-blur-sm hover:scale-110 active:scale-95 shadow-lg"
                 aria-label="Slide anterior"
                 type="button"
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6" />
               </button>
             </div>
 
             <div className="absolute inset-y-0 right-0 flex items-center z-20">
               <button
                 onClick={nextSlide}
-                className="mr-4 p-3 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all duration-200 backdrop-blur-sm hover:scale-110 active:scale-95 shadow-lg"
+                className="mr-2 sm:mr-4 p-2 sm:p-3 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all duration-200 backdrop-blur-sm hover:scale-110 active:scale-95 shadow-lg"
                 aria-label="Próximo slide"
                 type="button"
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6" />
               </button>
             </div>
 
             {/* Indicadores de Slide */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-20">
               <div className="flex space-x-3">
                 {banners.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 hover:scale-125 cursor-pointer ${
+                    className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 hover:scale-125 cursor-pointer ${
                       index === currentSlide
                         ? 'bg-yellow-400 scale-125 shadow-lg'
                         : 'bg-white/50 hover:bg-white/75'

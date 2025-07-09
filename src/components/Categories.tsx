@@ -61,7 +61,7 @@ const Categories = () => {
             return (
               <div
                 key={category.id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group overflow-hidden"
+                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group overflow-hidden w-full"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img

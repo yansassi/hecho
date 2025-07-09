@@ -65,7 +65,7 @@ const Contact = () => {
           {displayContactInfo.map((item, index) => {
             const IconComponent = item.icon;
             return (
-              <div key={index} className="text-center p-6 bg-gray-50 rounded-2xl hover:bg-yellow-50 transition-colors group">
+              <div key={index} className="text-center p-4 sm:p-6 bg-gray-50 rounded-2xl hover:bg-yellow-50 transition-colors group w-full">
                 <div className="flex justify-center mb-4">
                   <div className="bg-black group-hover:bg-gray-800 p-4 rounded-full transition-colors">
                     <IconComponent className="h-8 w-8 text-yellow-400" />

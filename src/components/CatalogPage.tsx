@@ -18,6 +18,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [productsToShow, setProductsToShow] = useState(8);
 
   // Carregar produtos e categorias do Supabase
   useEffect(() => {
@@ -55,6 +56,11 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     };
   }, []);
 
+  // Reset products to show when filters change
+  useEffect(() => {
+    setProductsToShow(8);
+  }, [selectedCategory, searchTerm]);
+
   const filteredProducts = useMemo(() => {
     let filtered = allProducts;
 
@@ -78,43 +84,20 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     return filtered;
   }, [allProducts, selectedCategory, searchTerm]);
 
+  const displayedProducts = useMemo(() => {
+    return filteredProducts.slice(0, productsToShow);
+  }, [filteredProducts, productsToShow]);
+
+  const hasMoreProducts = filteredProducts.length > productsToShow;
+
+  const loadMoreProducts = () => {
+    setProductsToShow(prev => prev + 8);
+  };
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setShowMobileFilters(false);
   };
   const ProductCard = ({ product }: { product: Product }) => {
-  // Loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => onNavigate?.('home')}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 mr-2" />
-                {t('catalog.back')}
-              </button>
-              <div>
-                <h1 className="text-xl md:text-3xl font-bold text-gray-900">{t('catalog.title')}</h1>
-                <p className="text-sm md:text-base text-gray-600 mt-1">
-                  {t('catalog.subtitle')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-yellow-500"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
     const productImage = getProductImage(product);
 
     if (viewMode === 'list') {
@@ -219,6 +202,38 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     );
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => onNavigate?.('home')}
+                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                {t('catalog.back')}
+              </button>
+              <div>
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900">{t('catalog.title')}</h1>
+                <p className="text-sm md:text-base text-gray-600 mt-1">
+                  {t('catalog.subtitle')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-yellow-500"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -249,7 +264,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                   placeholder={t('catalog.search')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent w-48 md:w-64"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent w-full sm:w-48 md:w-64"
                 />
               </div>
               
@@ -284,7 +299,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
       {/* Mobile Filters Overlay */}
       {showMobileFilters && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden">
-          <div className="fixed inset-y-0 left-0 w-80 bg-white shadow-xl">
+          <div className="fixed inset-y-0 left-0 w-full max-w-xs bg-white shadow-xl">
             <div className="flex items-center justify-between p-4 border-b">
               <h3 className="text-lg font-semibold text-gray-900">{t('catalog.categories')}</h3>
               <button
@@ -363,7 +378,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
           <div className="flex-1">
             <div className="mb-6 flex justify-between items-center">
               <p className="text-sm md:text-base text-gray-600">
-                {t('catalog.showing').replace('{count}', filteredProducts.length.toString())}
+                {t('catalog.showing').replace('{count}', displayedProducts.length.toString())} {t('catalog.of')} {filteredProducts.length} {t('catalog.products')}
                 {selectedCategory !== 'all' && (
                   <span> {t('catalog.in')} {categories.find(c => c.id === selectedCategory)?.displayName}</span>
                 )}
@@ -373,7 +388,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               </p>
             </div>
 
-            {filteredProducts.length === 0 ? (
+            {displayedProducts.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-gray-400 mb-4">
                   <Search className="h-16 w-16 mx-auto" />
@@ -386,15 +401,28 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                 </p>
               </div>
             ) : (
-              <div className={
-                viewMode === 'grid' 
-                  ? 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6'
-                  : 'space-y-4'
-              }>
-                {filteredProducts.map((product) => (
-                  <ProductCard key={`${product.codigo}-${product.codigoBarra}`} product={product} />
-                ))}
-              </div>
+              <>
+                <div className={
+                  viewMode === 'grid' 
+                    ? 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6'
+                    : 'space-y-4'
+                }>
+                  {displayedProducts.map((product) => (
+                    <ProductCard key={`${product.codigo}-${product.codigoBarra}`} product={product} />
+                  ))}
+                </div>
+                
+                {hasMoreProducts && (
+                  <div className="mt-8 text-center">
+                    <button
+                      onClick={loadMoreProducts}
+                      className="inline-flex items-center px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg transition-colors shadow-lg hover:shadow-xl"
+                    >
+                      {t('catalog.loadMore')} ({filteredProducts.length - productsToShow} {t('catalog.remaining')})
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

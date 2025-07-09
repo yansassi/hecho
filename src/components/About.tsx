@@ -43,7 +43,7 @@ const About = () => {
               {stats.map((stat, index) => {
                 const IconComponent = stat.icon;
                 return (
-                  <div key={index} className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                  <div key={index} className="text-center p-4 sm:p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow w-full">
                     <div className="flex justify-center mb-4">
                       <div className="bg-black p-3 rounded-full">
                         <IconComponent className="h-6 w-6 text-yellow-400" />

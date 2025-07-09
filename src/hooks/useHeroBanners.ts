@@ -10,6 +10,7 @@ export interface HeroBannerDisplay {
   ctaText: string;
   ctaAction: string;
   image: string;
+  mobileImage: string;
 }
 
 export const useHeroBanners = () => {
@@ -48,7 +49,8 @@ export const useHeroBanners = () => {
         highlight: language === 'pt' ? banner.highlight_pt : banner.highlight_es,
         ctaText: language === 'pt' ? banner.cta_text_pt : banner.cta_text_es,
         ctaAction: banner.cta_action,
-        image: banner.image_url
+        image: banner.image_url,
+        mobileImage: banner.mobile_image_url || banner.image_url
       }));
 
       console.log('✅ Banners transformados:', transformedData.length);
@@ -69,7 +71,8 @@ export const useHeroBanners = () => {
           highlight: language === 'pt' ? 'para sua obra' : 'para tu obra',
           ctaText: language === 'pt' ? 'Ver Catálogo' : 'Ver Catálogo',
           ctaAction: 'catalog',
-          image: 'https://images.pexels.com/photos/5691641/pexels-photo-5691641.jpeg?auto=compress&cs=tinysrgb&w=1200'
+          image: 'https://images.pexels.com/photos/5691641/pexels-photo-5691641.jpeg?auto=compress&cs=tinysrgb&w=1200',
+          mobileImage: 'https://images.pexels.com/photos/5691641/pexels-photo-5691641.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
         },
         {
           id: 'fallback-2',
@@ -80,7 +83,8 @@ export const useHeroBanners = () => {
           highlight: language === 'pt' ? 'de qualidade' : 'de calidad',
           ctaText: language === 'pt' ? 'Ver Ferramentas' : 'Ver Herramientas',
           ctaAction: 'catalog',
-          image: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=1200'
+          image: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=1200',
+          mobileImage: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
         },
         {
           id: 'fallback-3',
@@ -91,7 +95,8 @@ export const useHeroBanners = () => {
           highlight: language === 'pt' ? 'completos' : 'completos',
           ctaText: language === 'pt' ? 'Ver Produtos' : 'Ver Productos',
           ctaAction: 'catalog',
-          image: 'https://images.pexels.com/photos/8293641/pexels-photo-8293641.jpeg?auto=compress&cs=tinysrgb&w=1200'
+          image: 'https://images.pexels.com/photos/8293641/pexels-photo-8293641.jpeg?auto=compress&cs=tinysrgb&w=1200',
+          mobileImage: 'https://images.pexels.com/photos/8293641/pexels-photo-8293641.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
         }
       ];
       

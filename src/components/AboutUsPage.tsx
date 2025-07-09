@@ -170,22 +170,21 @@ const AboutUsPage = () => {
           </div>
 
           <div className="relative">
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-yellow-400"></div>
-            <div className="space-y-12">
+            <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-yellow-400"></div>
+            <div className="grid grid-cols-1 md:grid md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-0 md:space-y-12">
               {timeline.map((item, index) => (
-                <div key={index} className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
+                <React.Fragment key={index}>
+                  <div className={`text-center md:text-${index % 2 === 0 ? 'right' : 'left'} ${index % 2 === 0 ? 'md:col-start-1 md:pr-8' : 'md:col-start-3 md:pl-8'}`}>
                     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
                       <div className="text-2xl font-bold text-yellow-600 mb-2">{item.year}</div>
                       <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
                       <p className="text-gray-600">{item.description}</p>
                     </div>
                   </div>
-                  <div className="relative z-10 flex items-center justify-center w-12 h-12 bg-yellow-500 rounded-full border-4 border-white shadow-lg">
+                  <div className="relative z-10 flex items-center justify-center w-12 h-12 bg-yellow-500 rounded-full border-4 border-white shadow-lg mx-auto my-4 md:my-0 md:col-start-2">
                     <div className="w-4 h-4 bg-white rounded-full"></div>
                   </div>
-                  <div className="w-1/2"></div>
-                </div>
+                </React.Fragment>
               ))}
             </div>
           </div>

@@ -105,8 +105,8 @@ const Header = ({ onNavigate }: HeaderProps) => {
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-700">
+        <div className={`md:hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+          <div className="py-4 border-t border-gray-700">
             <nav>
               <ul className="space-y-2">
                 {navItems.map((item) => (
@@ -162,7 +162,7 @@ const Header = ({ onNavigate }: HeaderProps) => {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );

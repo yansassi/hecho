@@ -63,7 +63,7 @@ function App() {
 
   return (
     <LanguageProvider>
-      <div className="min-h-screen">
+      <div className="min-h-screen overflow-x-hidden">
         {currentPage === 'login' && (
           <LoginPage onNavigate={handleNavigate} />
         )}

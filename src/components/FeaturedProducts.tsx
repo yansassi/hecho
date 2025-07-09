@@ -189,7 +189,7 @@ const FeaturedProducts = ({ onNavigate }: FeaturedProductsProps = {}) => {
         {/* Carrossel de Produtos */}
         <div className="relative">
           {/* Container do carrossel */}
-          <div className="overflow-hidden">
+          <div className="overflow-hidden w-full">
             <div 
               className="flex transition-transform duration-500 ease-in-out"
               style={{

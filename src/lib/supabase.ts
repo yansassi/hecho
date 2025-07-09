@@ -1,17 +1,46 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fxnzgvpeyadupjcaupvg.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4bnpndnBleWFkdXBqY2F1cHZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzg3OTksImV4cCI6MjA2NzUxNDc5OX0.CK6TtIjGYr3we2-NDDIiDbRbSTeAYHlTZmUmD-qmpwk';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  console.error('❌ Variáveis de ambiente do Supabase não encontradas');
+  console.error('VITE_SUPABASE_URL:', supabaseUrl ? 'Configurada' : 'Não configurada');
+  console.error('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'Configurada' : 'Não configurada');
+  throw new Error('Variáveis de ambiente do Supabase não configuradas. Verifique o arquivo .env');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Configurações do cliente Supabase
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
+  }
+});
 
-// Log para debug
-console.log('Supabase URL:', supabaseUrl);
-console.log('Supabase conectado:', !!supabase);
+// Logs para debug
+console.log('🔗 Supabase URL:', supabaseUrl);
+console.log('🔑 Supabase Anon Key:', supabaseAnonKey ? 'Configurada' : 'Não configurada');
+console.log('✅ Cliente Supabase inicializado:', !!supabase);
+
+// Testar conexão
+supabase.from('products').select('count', { count: 'exact', head: true })
+  .then(({ count, error }) => {
+    if (error) {
+      console.error('❌ Erro na conexão com Supabase:', error.message);
+    } else {
+      console.log('✅ Conexão com Supabase estabelecida. Produtos encontrados:', count);
+    }
+  })
+  .catch((error) => {
+    console.error('❌ Falha ao testar conexão:', error);
+  });
 
 // Tipos para TypeScript
 export interface Testimonial {
@@ -97,6 +126,7 @@ export interface HeroBanner {
   cta_text_es: string;
   cta_action: string;
   image_url: string;
+  mobile_image_url: string;
   is_active: boolean;
   display_order: number;
   created_at: string;
