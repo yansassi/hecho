@@ -2,43 +2,12 @@ import React from 'react';
 import { MapPin, Phone, Clock } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useContactInfo } from '../hooks/useContactInfo';
+import { useBrands } from '../hooks/useBrands';
 
 const Brands = () => {
   const { t } = useLanguage();
   const { contactInfo } = useContactInfo();
-
-  const brands = [
-    {
-      name: 'Tigre',
-      logo: 'https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=200&h=100&fit=crop',
-      category: 'Tubos e Conexões'
-    },
-    {
-      name: 'Tramontina',
-      logo: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=200&h=100&fit=crop',
-      category: 'Ferramentas'
-    },
-    {
-      name: 'Siemens',
-      logo: 'https://images.pexels.com/photos/257736/pexels-photo-257736.jpeg?auto=compress&cs=tinysrgb&w=200&h=100&fit=crop',
-      category: 'Materiais Elétricos'
-    },
-    {
-      name: 'Viqua',
-      logo: 'https://images.pexels.com/photos/8293641/pexels-photo-8293641.jpeg?auto=compress&cs=tinysrgb&w=200&h=100&fit=crop',
-      category: 'Hidráulica'
-    },
-    {
-      name: 'Famastil',
-      logo: 'https://images.pexels.com/photos/4239146/pexels-photo-4239146.jpeg?auto=compress&cs=tinysrgb&w=200&h=100&fit=crop',
-      category: 'Jardinagem'
-    },
-    {
-      name: 'Master',
-      logo: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=200&h=100&fit=crop',
-      category: 'Discos de Corte'
-    }
-  ];
+  const { brands, loading } = useBrands();
 
   return (
     <section className="py-20 bg-white">
@@ -53,26 +22,48 @@ const Brands = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-20">
-          {brands.map((brand, index) => (
-            <div
-              key={index}
-              className="group bg-gray-50 rounded-xl p-6 hover:bg-yellow-50 transition-all duration-300 hover:shadow-lg w-full"
-            >
-              <div className="aspect-video bg-white rounded-lg overflow-hidden mb-4 shadow-sm">
-                <img
-                  src={brand.logo}
-                  alt={`Logo ${brand.name}`}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-20">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="group bg-gray-50 rounded-xl p-6 w-full animate-pulse">
+                <div className="aspect-video bg-gray-200 rounded-lg mb-4"></div>
+                <div className="text-center">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                </div>
               </div>
-              <div className="text-center">
-                <h3 className="font-bold text-gray-900 mb-1">{brand.name}</h3>
-                <p className="text-sm text-gray-600">{brand.category}</p>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-20">
+            {brands.map((brand) => (
+              <div
+                key={brand.id}
+                className="group bg-gray-50 rounded-xl p-6 hover:bg-yellow-50 transition-all duration-300 hover:shadow-lg w-full"
+              >
+                <div className="aspect-video bg-white rounded-lg overflow-hidden mb-4 shadow-sm">
+                  <img
+                    src={brand.logo_url}
+                    alt={`Logo ${brand.name}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gray-100"><div class="text-gray-400 text-xs font-medium">' + brand.name + '</div></div>';
+                      }
+                    }}
+                  />
+                </div>
+                <div className="text-center">
+                  <h3 className="font-bold text-gray-900 mb-1">{brand.name}</h3>
+                  <p className="text-sm text-gray-600">{brand.category}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Location Section */}
         <div className="bg-gray-50 rounded-2xl p-8">

@@ -14,6 +14,7 @@ import {
 import { supabase } from '../lib/supabase';
 import HeroBannersAdmin from './HeroBannersAdmin';
 import CategoriesAdmin from './CategoriesAdmin';
+import BrandsAdmin from './BrandsAdmin';
 import TestimonialsAdmin from './TestimonialsAdmin';
 import ContactInfoAdmin from './ContactInfoAdmin';
 import ProductsAdmin from './ProductsAdmin';
@@ -23,6 +24,7 @@ interface AdminPanelProps {
 }
 
 type AdminSection = 'dashboard' | 'hero-banners' | 'categories' | 'products' | 'testimonials' | 'contact-info';
+type AdminSection = 'dashboard' | 'hero-banners' | 'categories' | 'brands' | 'products' | 'testimonials' | 'contact-info';
 
 const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
   const [currentSection, setCurrentSection] = useState<AdminSection>('dashboard');
@@ -66,6 +68,12 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
       description: 'Gerenciar categorias de produtos'
     },
     {
+      id: 'brands' as AdminSection,
+      label: 'Marcas',
+      icon: Package,
+      description: 'Gerenciar marcas parceiras'
+    },
+    {
       id: 'products' as AdminSection,
       label: 'Produtos',
       icon: Package,
@@ -91,6 +99,8 @@ const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
         return <HeroBannersAdmin />;
       case 'categories':
         return <CategoriesAdmin />;
+      case 'brands':
+        return <BrandsAdmin />;
       case 'products':
         return <ProductsAdmin />;
       case 'testimonials':
