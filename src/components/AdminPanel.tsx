@@ -23,7 +23,6 @@ interface AdminPanelProps {
   onNavigate?: (page: 'home' | 'about' | 'catalog' | 'login' | 'admin') => void;
 }
 
-type AdminSection = 'dashboard' | 'hero-banners' | 'categories' | 'products' | 'testimonials' | 'contact-info';
 type AdminSection = 'dashboard' | 'hero-banners' | 'categories' | 'brands' | 'products' | 'testimonials' | 'contact-info';
 
 const AdminPanel = ({ onNavigate }: AdminPanelProps) => {
