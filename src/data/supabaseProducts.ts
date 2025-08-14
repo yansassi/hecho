@@ -8,7 +8,8 @@ const convertSupabaseProduct = (supabaseProduct: any): Product => ({
   info: supabaseProduct.info || '',
   quantidade: supabaseProduct.quantidade || '1 Unid.',
   codigoBarra: supabaseProduct.codigo_barra,
-  categoria: supabaseProduct.categoria
+  categoria: supabaseProduct.categoria,
+  imageUrl: supabaseProduct.image_url || null
 });
 
 export const getAllProductsFromSupabase = async (): Promise<Product[]> => {

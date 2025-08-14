@@ -5,6 +5,7 @@ export interface Product {
   quantidade: string;
   codigoBarra: string;
   categoria: string;
+  imageUrl?: string | null;
 }
 
 export interface ProductCategory {

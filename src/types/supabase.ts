@@ -12,6 +12,13 @@ export interface Database {
           categoria: string;
           created_at: string;
           updated_at: string;
+          name: string;
+          description: string;
+          price: number;
+          category_id: string;
+          image_url: string;
+          stock: number;
+          active: boolean;
         };
         Insert: {
           id?: string;
@@ -23,6 +30,13 @@ export interface Database {
           categoria: string;
           created_at?: string;
           updated_at?: string;
+          name?: string;
+          description?: string;
+          price?: number;
+          category_id?: string;
+          image_url?: string;
+          stock?: number;
+          active?: boolean;
         };
         Update: {
           id?: string;
@@ -34,6 +48,13 @@ export interface Database {
           categoria?: string;
           created_at?: string;
           updated_at?: string;
+          name?: string;
+          description?: string;
+          price?: number;
+          category_id?: string;
+          image_url?: string;
+          stock?: number;
+          active?: boolean;
         };
       };
     };
