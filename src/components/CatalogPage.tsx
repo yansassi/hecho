@@ -385,7 +385,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                 className="lg:hidden flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
               >
                 <Filter className="h-4 w-4" />
-                <span className="text-sm">Filtros</span>
+                <span className="text-sm">Categoria</span>
               </button>
 
               <div className="hidden sm:flex items-center space-x-2 bg-gray-100 rounded-lg p-1 flex-shrink-0">
@@ -477,10 +477,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                         <span className={selectedCategory === category.id ? 'text-yellow-600' : 'text-gray-500'}>
                           {getCategoryIcon(category.displayName)}
                         </span>
-                        <div className="flex-1 min-w-0">
-                          <span className="font-medium block">{category.displayName}</span>
-                          <span className="text-xs text-gray-500">{category.count} produtos</span>
-                        </div>
+                        <span className="font-medium">{category.displayName}</span>
                       </button>
                     ))
                   )}
