@@ -214,6 +214,17 @@ export const getGroupedProductsPaginated = async (
       totalVariations: variations.length
     }));
 
+    // Ordenar grupos para priorizar produtos em promoção
+    allGroups.sort((a, b) => {
+      const aHasPromotion = a.variations.some(v => v.isPromotion);
+      const bHasPromotion = b.variations.some(v => v.isPromotion);
+
+      if (aHasPromotion && !bHasPromotion) return -1;
+      if (!aHasPromotion && bHasPromotion) return 1;
+
+      return a.nome.localeCompare(b.nome);
+    });
+
     const total = allGroups.length;
     const from = (page - 1) * pageSize;
     const to = from + pageSize;
