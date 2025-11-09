@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Filter, Grid, List, Package, ArrowLeft, ChevronLeft, ChevronRight, Layers, Hammer, Zap, Droplet, ShoppingBag, Wrench, Paintbrush, Shovel, Cat, Smartphone, ShoppingCart, Fish } from 'lucide-react';
+import { Search, Filter, Grid, List, Package, ArrowLeft, ChevronLeft, ChevronRight, Layers, Hammer, Zap, Droplet, ShoppingBag, Wrench, Paintbrush, Shovel, Cat, Smartphone, ShoppingCart, Fish, X } from 'lucide-react';
 import { getProductsPaginated, getProductCategoriesFromSupabase } from '../data/supabaseProducts';
 import { Product, ProductCategory } from '../types/Product';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -23,6 +23,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Debounce search term
   useEffect(() => {
@@ -208,51 +209,50 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
 
     if (viewMode === 'list') {
       return (
-        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 p-6">
-          <div className="flex gap-6">
-            <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 p-3 sm:p-6">
+          <div className="flex gap-3 sm:gap-6">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
               <img
                 src={productImage}
                 alt={product.nome}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  // Se a imagem falhar ao carregar, mostrar placeholder
                   target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTIwSDIyNVYxNDBIMTc1VjEyMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHBhdGggZD0iTTE1MCA5MEgyNTBWMTcwSDE1MFY5MFoiIHN0cm9rZT0iIzlDQTNBRiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNkI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiPkltYWdlbSBuw6NvIGRpc3BvbsOtdmVsPC90ZXh0Pgo8dGV4dCB4PSIyMDAiIHk9IjIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIj5ubyBtb21lbnRvPC90ZXh0Pgo8L3N2Zz4K';
                 }}
               />
             </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900 hover:text-yellow-600 transition-colors">
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between items-start mb-2 gap-2">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm sm:text-lg font-bold text-gray-900 hover:text-yellow-600 transition-colors line-clamp-2">
                     {product.nome}
                   </h3>
-                  <p className="text-sm text-gray-500 font-mono">{product.codigo}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 font-mono truncate">{product.codigo}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex-shrink-0">
                   {product.isPromotion ? (
-                    <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold uppercase animate-pulse">
+                    <span className="bg-red-600 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase animate-pulse">
                       {t('products.promotion')}
                     </span>
                   ) : (
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    <span className="bg-blue-100 text-blue-800 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium hidden sm:inline-block">
                       {product.categoria}
                     </span>
                   )}
                 </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                <div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+                <div className="truncate">
                   <span className="font-medium">{t('catalog.info')}</span> {product.description || product.info || '-'}
                 </div>
                 <div>
                   <span className="font-medium">{t('catalog.quantity')}</span> {product.quantidade}
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-1 sm:col-span-2 truncate">
                   <span className="font-medium">{t('catalog.barcode')}</span>
-                  <span className="font-mono ml-1">{product.codigoBarra}</span>
+                  <span className="font-mono ml-1 text-[10px] sm:text-xs">{product.codigoBarra}</span>
                 </div>
               </div>
             </div>
@@ -262,7 +262,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     }
 
     return (
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 sm:transform sm:hover:-translate-y-1 border border-gray-100 overflow-hidden">
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           <img
             src={productImage}
@@ -273,29 +273,29 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTIwSDIyNVYxNDBIMTc1VjEyMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHBhdGggZD0iTTE1MCA5MEgyNTBWMTcwSDE1MFY5MFoiIHN0cm9rZT0iIzlDQTNBRiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNkI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiPkltYWdlbSBuw6NvIGRpc3BvbsOtdmVsPC90ZXh0Pgo8dGV4dCB4PSIyMDAiIHk9IjIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIj5ubyBtb21lbnRvPC90ZXh0Pgo8L3N2Zz4K';
             }}
           />
-          <div className="absolute top-2 right-2">
+          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
             {product.isPromotion ? (
-              <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold uppercase animate-pulse">
+              <span className="bg-red-600 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase animate-pulse">
                 {t('products.promotion')}
               </span>
             ) : (
-              <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <span className="bg-blue-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-medium truncate max-w-[80px] sm:max-w-none block">
                 {product.categoria}
               </span>
             )}
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-2.5 sm:p-4">
           <div className="mb-2">
-            <h3 className="text-sm font-bold text-gray-900 hover:text-yellow-600 transition-colors line-clamp-2 min-h-[2.5rem]">
+            <h3 className="text-xs sm:text-sm font-bold text-gray-900 hover:text-yellow-600 transition-colors line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]">
               {product.nome}
             </h3>
-            <p className="text-xs text-gray-500 font-mono">{product.codigo}</p>
+            <p className="text-[10px] sm:text-xs text-gray-500 font-mono truncate">{product.codigo}</p>
           </div>
-          
-          <div className="space-y-1 text-xs text-gray-600">
-            <div>
+
+          <div className="space-y-1 text-[10px] sm:text-xs text-gray-600">
+            <div className="truncate">
               <span className="font-medium">{t('catalog.info')}</span> {product.description || product.info || '-'}
             </div>
             <div>
@@ -303,8 +303,8 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             </div>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <div className="text-xs text-gray-500 font-mono truncate">
+          <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
+            <div className="text-[9px] sm:text-xs text-gray-500 font-mono truncate">
               {product.codigoBarra}
             </div>
           </div>
@@ -317,37 +317,49 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col gap-4">
+            {/* Top row: Back button and title */}
+            <div className="flex items-start justify-between gap-2">
               <button
                 onClick={() => onNavigate?.('home')}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
               >
-                <ArrowLeft className="h-5 w-5 mr-2" />
-                {t('catalog.back')}
+                <ArrowLeft className="h-5 w-5 mr-1" />
+                <span className="hidden sm:inline">{t('catalog.back')}</span>
               </button>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">{t('catalog.title')}</h1>
-                <p className="text-gray-600 mt-1">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{t('catalog.title')}</h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-1 hidden sm:block">
                   {t('catalog.subtitle')}
                 </p>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+
+            {/* Search and view controls */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
                 <input
                   type="text"
                   placeholder={t('catalog.search')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent w-64"
+                  className="pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent w-full text-sm sm:text-base"
                 />
               </div>
-              
-              <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+
+              {/* Mobile filter button */}
+              <button
+                onClick={() => setShowMobileFilters(true)}
+                className="lg:hidden flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+              >
+                <Filter className="h-4 w-4" />
+                <span className="text-sm">Filtros</span>
+              </button>
+
+              {/* View mode toggle - hidden on mobile */}
+              <div className="hidden sm:flex items-center space-x-2 bg-gray-100 rounded-lg p-1 flex-shrink-0">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
@@ -366,10 +378,10 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex gap-4 lg:gap-8">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block w-64 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-24 max-h-[calc(100vh-7rem)] flex flex-col">
               <div className="flex items-center p-6 pb-4 border-b border-gray-200">
                 <Filter className="h-5 w-5 text-gray-600 mr-2" />
@@ -393,7 +405,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                       <span className={selectedCategory === category.id ? 'text-yellow-600' : 'text-gray-500'}>
                         {getCategoryIcon(category.displayName)}
                       </span>
-                      <span className="font-medium">{category.displayName}</span>
+                      <span className="font-medium text-sm">{category.displayName}</span>
                     </button>
                   ))
                 )}
@@ -401,20 +413,69 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             </div>
           </div>
 
+          {/* Mobile Filter Modal */}
+          {showMobileFilters && (
+            <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end">
+              <div className="bg-white w-full max-h-[80vh] rounded-t-2xl overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                  <div className="flex items-center">
+                    <Filter className="h-5 w-5 text-gray-600 mr-2" />
+                    <h3 className="text-lg font-semibold text-gray-900">{t('catalog.categories')}</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowMobileFilters(false)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <X className="h-5 w-5 text-gray-600" />
+                  </button>
+                </div>
+
+                <div className="overflow-y-auto p-4 space-y-2 flex-1">
+                  {categories.length === 0 ? (
+                    <p className="text-gray-500 text-sm">Carregando categorias...</p>
+                  ) : (
+                    categories.map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => {
+                          setSelectedCategory(category.id);
+                          setShowMobileFilters(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
+                          selectedCategory === category.id
+                            ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                            : 'text-gray-700 hover:bg-gray-50 border border-gray-100'
+                        }`}
+                      >
+                        <span className={selectedCategory === category.id ? 'text-yellow-600' : 'text-gray-500'}>
+                          {getCategoryIcon(category.displayName)}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium block">{category.displayName}</span>
+                          <span className="text-xs text-gray-500">{category.count} produtos</span>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Products Grid/List */}
-          <div className="flex-1">
-            <div className="mb-6 flex justify-between items-center">
-              <p className="text-gray-600">
+          <div className="flex-1 min-w-0">
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+              <p className="text-xs sm:text-sm text-gray-600 truncate">
                 Mostrando {startIndex + 1}-{endIndex} de {totalProducts} productos
                 {selectedCategory !== 'all' && (
-                  <span> {t('catalog.in')} {categories.find(c => c.id === selectedCategory)?.displayName}</span>
+                  <span className="hidden sm:inline"> {t('catalog.in')} {categories.find(c => c.id === selectedCategory)?.displayName}</span>
                 )}
                 {debouncedSearchTerm && (
-                  <span> {t('catalog.for')} "{debouncedSearchTerm}"</span>
+                  <span className="hidden sm:inline"> {t('catalog.for')} "{debouncedSearchTerm}"</span>
                 )}
               </p>
               {totalPages > 1 && (
-                <p className="text-sm text-gray-500">
+                <p className="text-xs sm:text-sm text-gray-500">
                   Página {currentPage} de {totalPages}
                 </p>
               )}
@@ -423,12 +484,12 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             {totalProducts === 0 ? (
               <div className="text-center py-12">
                 <div className="text-gray-400 mb-4">
-                  <Search className="h-16 w-16 mx-auto" />
+                  <Search className="h-12 w-12 sm:h-16 sm:w-16 mx-auto" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                   {t('catalog.noProducts')}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-sm sm:text-base text-gray-600">
                   {t('catalog.noProducts.desc')}
                 </p>
               </div>
@@ -436,7 +497,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               <>
                 <div className={
                   viewMode === 'grid'
-                    ? 'grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+                    ? 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6'
                     : 'space-y-4'
                 }>
                   {currentProducts.map((product) => (
@@ -446,47 +507,49 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="mt-8 flex justify-center">
-                    <nav className="flex items-center space-x-2">
+                  <div className="mt-6 sm:mt-8 flex justify-center px-2">
+                    <nav className="flex items-center space-x-1 sm:space-x-2">
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`p-2 rounded-lg border ${
+                        className={`p-1.5 sm:p-2 rounded-lg border ${
                           currentPage === 1
                             ? 'border-gray-200 text-gray-400 cursor-not-allowed'
                             : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        <ChevronLeft className="h-5 w-5" />
+                        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
 
-                      {getPageNumbers().map((page, index) => (
-                        <button
-                          key={index}
-                          onClick={() => typeof page === 'number' && handlePageChange(page)}
-                          disabled={page === '...'}
-                          className={`px-4 py-2 rounded-lg border ${
-                            page === currentPage
-                              ? 'bg-yellow-500 border-yellow-500 text-black font-semibold'
-                              : page === '...'
-                              ? 'border-transparent text-gray-400 cursor-default'
-                              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      ))}
+                      <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto max-w-[calc(100vw-200px)] sm:max-w-none">
+                        {getPageNumbers().map((page, index) => (
+                          <button
+                            key={index}
+                            onClick={() => typeof page === 'number' && handlePageChange(page)}
+                            disabled={page === '...'}
+                            className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg border text-sm sm:text-base flex-shrink-0 ${
+                              page === currentPage
+                                ? 'bg-yellow-500 border-yellow-500 text-black font-semibold'
+                                : page === '...'
+                                ? 'border-transparent text-gray-400 cursor-default'
+                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                      </div>
 
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`p-2 rounded-lg border ${
+                        className={`p-1.5 sm:p-2 rounded-lg border ${
                           currentPage === totalPages
                             ? 'border-gray-200 text-gray-400 cursor-not-allowed'
                             : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
                     </nav>
                   </div>
