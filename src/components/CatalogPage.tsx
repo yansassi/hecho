@@ -316,7 +316,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             <div className="truncate">
               <span className="font-medium">{t('catalog.info')}</span> {product.description || product.info || '-'}
             </div>
-            <div>
+            <div className="hidden sm:block">
               <span className="font-medium">{t('catalog.qty')}</span> {product.quantidade}
             </div>
           </div>
