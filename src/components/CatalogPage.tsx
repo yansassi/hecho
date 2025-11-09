@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, Grid, List, Package, ArrowLeft, ChevronLeft, ChevronRight, Layers, Hammer, Zap, Droplet, ShoppingBag, Wrench, Paintbrush, Shovel, Cat, Smartphone, ShoppingCart, Fish, X } from 'lucide-react';
-import { getProductsPaginated, getProductCategoriesFromSupabase } from '../data/supabaseProducts';
-import { Product, ProductCategory } from '../types/Product';
+import { getGroupedProductsPaginated, getProductCategoriesFromSupabase, ProductGroup } from '../data/supabaseProducts';
+import { ProductCategory } from '../types/Product';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getProductImage } from '../utils/productImages';
+import ProductVariationsModal from './ProductVariationsModal';
 
 interface CatalogPageProps {
   onNavigate?: (page: 'home' | 'products' | 'about' | 'catalog' | 'admin') => void;
@@ -17,15 +17,15 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [productGroups, setProductGroups] = useState<ProductGroup[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalGroups, setTotalGroups] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [selectedProductGroup, setSelectedProductGroup] = useState<ProductGroup | null>(null);
 
-  // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -34,7 +34,6 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Carregar categorias com filtro de busca
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -48,18 +47,17 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     loadCategories();
   }, [debouncedSearchTerm]);
 
-  // Carregar produtos com paginação
   const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await getProductsPaginated(
+      const result = await getGroupedProductsPaginated(
         currentPage,
         PRODUCTS_PER_PAGE,
         selectedCategory,
         debouncedSearchTerm
       );
-      setProducts(result.products);
-      setTotalProducts(result.total);
+      setProductGroups(result.groups);
+      setTotalGroups(result.total);
       setHasMore(result.hasMore);
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
@@ -72,7 +70,6 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     loadProducts();
   }, [loadProducts]);
 
-  // Escutar evento customizado para filtrar produto específico
   useEffect(() => {
     const handleFilterProduct = (event: CustomEvent) => {
       const { searchTerm: productSearch } = event.detail;
@@ -88,16 +85,13 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     };
   }, []);
 
-  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategory, debouncedSearchTerm]);
 
-  // Pagination
-  const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+  const totalPages = Math.ceil(totalGroups / PRODUCTS_PER_PAGE);
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
-  const endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, totalProducts);
-  const currentProducts = products;
+  const endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, totalGroups);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -195,21 +189,32 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
       </div>
     );
   }
-  const ProductCard = ({ product }: { product: Product }) => {
-    // Para o catálogo, usar a URL do Supabase ou mostrar placeholder
-    const getProductImageForCatalog = (product: Product): string => {
-      if (product.imageUrl && product.imageUrl.trim() !== '') {
-        return product.imageUrl;
+
+  const ProductCard = ({ group }: { group: ProductGroup }) => {
+    const product = group.variations[0];
+    const hasVariations = group.totalVariations > 1;
+
+    const getProductImageForCatalog = (imageUrl: string | null | undefined): string => {
+      if (imageUrl && imageUrl.trim() !== '') {
+        return imageUrl;
       }
-      // Retorna uma imagem placeholder indicando que não há imagem
       return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTIwSDIyNVYxNDBIMTc1VjEyMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHBhdGggZD0iTTE1MCA5MEgyNTBWMTcwSDE1MFY5MFoiIHN0cm9rZT0iIzlDQTNBRiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNkI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiPkltYWdlbSBuw6NvIGRpc3BvbsOtdmVsPC90ZXh0Pgo8dGV4dCB4PSIyMDAiIHk9IjIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIj5ubyBtb21lbnRvPC90ZXh0Pgo8L3N2Zz4K';
     };
 
-    const productImage = getProductImageForCatalog(product);
+    const productImage = getProductImageForCatalog(product.imageUrl);
+
+    const handleClick = () => {
+      if (hasVariations) {
+        setSelectedProductGroup(group);
+      }
+    };
 
     if (viewMode === 'list') {
       return (
-        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 p-3 sm:p-6">
+        <div
+          className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 p-3 sm:p-6 ${hasVariations ? 'cursor-pointer' : ''}`}
+          onClick={handleClick}
+        >
           <div className="flex gap-3 sm:gap-6">
             <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
               <img
@@ -229,6 +234,11 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                     {product.nome}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-500 font-mono truncate">{product.codigo}</p>
+                  {hasVariations && (
+                    <span className="inline-block mt-1 bg-yellow-500 text-black px-2 py-0.5 rounded-full text-xs font-semibold">
+                      {group.totalVariations} {t('catalog.variations')}
+                    </span>
+                  )}
                 </div>
                 <div className="text-right flex-shrink-0">
                   {product.isPromotion ? (
@@ -262,7 +272,10 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     }
 
     return (
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 sm:transform sm:hover:-translate-y-1 border border-gray-100 overflow-hidden">
+      <div
+        className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 sm:transform sm:hover:-translate-y-1 border border-gray-100 overflow-hidden ${hasVariations ? 'cursor-pointer' : ''}`}
+        onClick={handleClick}
+      >
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           <img
             src={productImage}
@@ -273,7 +286,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTIwSDIyNVYxNDBIMTc1VjEyMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHBhdGggZD0iTTE1MCA5MEgyNTBWMTcwSDE1MFY5MFoiIHN0cm9rZT0iIzlDQTNBRiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNkI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiPkltYWdlbSBuw6NvIGRpc3BvbsOtdmVsPC90ZXh0Pgo8dGV4dCB4PSIyMDAiIHk9IjIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIj5ubyBtb21lbnRvPC90ZXh0Pgo8L3N2Zz4K';
             }}
           />
-          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
+          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex flex-col gap-1 items-end">
             {product.isPromotion ? (
               <span className="bg-red-600 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase animate-pulse">
                 {t('products.promotion')}
@@ -281,6 +294,11 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             ) : (
               <span className="bg-blue-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-medium truncate max-w-[80px] sm:max-w-none block">
                 {product.categoria}
+              </span>
+            )}
+            {hasVariations && (
+              <span className="bg-yellow-500 text-black px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-semibold">
+                {group.totalVariations} {t('catalog.variations')}
               </span>
             )}
           </div>
@@ -308,6 +326,14 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               {product.codigoBarra}
             </div>
           </div>
+
+          {hasVariations && (
+            <div className="mt-2 text-center">
+              <span className="text-[10px] sm:text-xs text-yellow-600 font-medium">
+                {t('catalog.clickToSee')}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -315,11 +341,17 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {selectedProductGroup && (
+        <ProductVariationsModal
+          productName={selectedProductGroup.nome}
+          variations={selectedProductGroup.variations}
+          onClose={() => setSelectedProductGroup(null)}
+        />
+      )}
+
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col gap-4">
-            {/* Top row: Back button and title */}
             <div className="flex items-start justify-between gap-2">
               <button
                 onClick={() => onNavigate?.('home')}
@@ -336,7 +368,6 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               </div>
             </div>
 
-            {/* Search and view controls */}
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
@@ -349,7 +380,6 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                 />
               </div>
 
-              {/* Mobile filter button */}
               <button
                 onClick={() => setShowMobileFilters(true)}
                 className="lg:hidden flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
@@ -358,7 +388,6 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                 <span className="text-sm">Filtros</span>
               </button>
 
-              {/* View mode toggle - hidden on mobile */}
               <div className="hidden sm:flex items-center space-x-2 bg-gray-100 rounded-lg p-1 flex-shrink-0">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -380,7 +409,6 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex gap-4 lg:gap-8">
-          {/* Desktop Sidebar */}
           <div className="hidden lg:block w-64 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-24 max-h-[calc(100vh-7rem)] flex flex-col">
               <div className="flex items-center p-6 pb-4 border-b border-gray-200">
@@ -413,7 +441,6 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             </div>
           </div>
 
-          {/* Mobile Filter Modal */}
           {showMobileFilters && (
             <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end">
               <div className="bg-white w-full max-h-[80vh] rounded-t-2xl overflow-hidden flex flex-col">
@@ -462,11 +489,10 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
             </div>
           )}
 
-          {/* Products Grid/List */}
           <div className="flex-1 min-w-0">
             <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
               <p className="text-xs sm:text-sm text-gray-600 truncate">
-                Mostrando {startIndex + 1}-{endIndex} de {totalProducts} productos
+                Mostrando {startIndex + 1}-{endIndex} de {totalGroups} productos
                 {selectedCategory !== 'all' && (
                   <span className="hidden sm:inline"> {t('catalog.in')} {categories.find(c => c.id === selectedCategory)?.displayName}</span>
                 )}
@@ -481,7 +507,7 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
               )}
             </div>
 
-            {totalProducts === 0 ? (
+            {totalGroups === 0 ? (
               <div className="text-center py-12">
                 <div className="text-gray-400 mb-4">
                   <Search className="h-12 w-12 sm:h-16 sm:w-16 mx-auto" />
@@ -500,12 +526,11 @@ const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
                     ? 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6'
                     : 'space-y-4'
                 }>
-                  {currentProducts.map((product) => (
-                    <ProductCard key={`${product.codigo}-${product.codigoBarra}`} product={product} />
+                  {productGroups.map((group, index) => (
+                    <ProductCard key={`${group.nome}-${index}`} group={group} />
                   ))}
                 </div>
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="mt-6 sm:mt-8 flex justify-center px-2">
                     <nav className="flex items-center space-x-1 sm:space-x-2">

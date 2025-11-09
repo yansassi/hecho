@@ -127,7 +127,10 @@ export const translations = {
     'catalog.qty': 'Cant:',
     'catalog.quantity': 'Cantidad:',
     'catalog.barcode': 'Código de Barras:',
-    
+    'catalog.variations': 'variaciones',
+    'catalog.variations.available': 'variaciones disponibles',
+    'catalog.clickToSee': 'Clic para ver variaciones',
+
     // Common
     'common.address.street': 'Calle de las Herramientas, 123',
     'common.address.district': 'Centro, São Paulo/SP',
@@ -135,7 +138,8 @@ export const translations = {
     'common.schedule.saturday': 'Sáb: 8h a 14h',
     'common.schedule.sunday': 'Dom: Cerrado',
     'common.tradition': 'de tradición y calidad',
-    
+    'common.close': 'Cerrar',
+
     // Timeline
     'timeline.1999.title': 'Fundación de HECHO',
     'timeline.1999.desc': 'Iniciamos nuestro viaje con una pequeña tienda en el centro de São Paulo, enfocada en ferretería básica.',
@@ -289,7 +293,10 @@ export const translations = {
     'catalog.qty': 'Qtd:',
     'catalog.quantity': 'Quantidade:',
     'catalog.barcode': 'Código de Barras:',
-    
+    'catalog.variations': 'variações',
+    'catalog.variations.available': 'variações disponíveis',
+    'catalog.clickToSee': 'Clique para ver variações',
+
     // Common
     'common.address.street': 'Rua das Ferramentas, 123',
     'common.address.district': 'Centro - São Paulo/SP',
@@ -297,7 +304,8 @@ export const translations = {
     'common.schedule.saturday': 'Sáb: 8h às 14h',
     'common.schedule.sunday': 'Domingo: Fechado',
     'common.tradition': 'de tradição e qualidade',
-    
+    'common.close': 'Fechar',
+
     // Timeline
     'timeline.1999.title': 'Fundação da HECHO',
     'timeline.1999.desc': 'Iniciamos nossa jornada com uma pequena loja no centro de São Paulo, focada em ferragens básicas.',

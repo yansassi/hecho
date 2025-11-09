@@ -21,6 +21,18 @@ export interface PaginatedResult {
   hasMore: boolean;
 }
 
+export interface ProductGroup {
+  nome: string;
+  variations: Product[];
+  totalVariations: number;
+}
+
+export interface GroupedPaginatedResult {
+  groups: ProductGroup[];
+  total: number;
+  hasMore: boolean;
+}
+
 export const getProductsPaginated = async (
   page: number = 1,
   pageSize: number = 50,
@@ -93,6 +105,125 @@ export const getProductsPaginated = async (
   } catch (err) {
     console.error('Erro na conexão com Supabase:', err);
     return { products: [], total: 0, hasMore: false };
+  }
+};
+
+export const getProductVariations = async (productName: string): Promise<Product[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('id, codigo, nome, info, description, quantidade, codigo_barra, category_id, image_url, created_at, updated_at, categories(id, name)')
+      .eq('nome', productName)
+      .order('codigo', { ascending: true });
+
+    if (error) {
+      console.error('Erro ao buscar variações:', error);
+      return [];
+    }
+
+    const productIds = data?.map(p => p.id) || [];
+    const { data: promotions } = await supabase
+      .from('promotions')
+      .select('product_id')
+      .in('product_id', productIds)
+      .eq('active', true);
+
+    const promotionSet = new Set(promotions?.map(p => p.product_id) || []);
+
+    return data ? data.map((item: any) => {
+      const categoryName = item.categories?.name || 'Sin Categoría';
+      return convertSupabaseProduct({
+        ...item,
+        category_id: item.category_id,
+        category_name: categoryName,
+        is_promotion: promotionSet.has(item.id)
+      });
+    }) : [];
+  } catch (err) {
+    console.error('Erro ao buscar variações:', err);
+    return [];
+  }
+};
+
+export const getGroupedProductsPaginated = async (
+  page: number = 1,
+  pageSize: number = 50,
+  category?: string,
+  searchTerm?: string
+): Promise<GroupedPaginatedResult> => {
+  try {
+    let query = supabase
+      .from('products')
+      .select('id, codigo, nome, info, description, quantidade, codigo_barra, category_id, image_url, created_at, updated_at, categories(id, name)', { count: 'exact' });
+
+    if (category && category !== 'all') {
+      if (category === 'uncategorized') {
+        query = query.is('category_id', null);
+      } else {
+        query = query.eq('category_id', category);
+      }
+    }
+
+    if (searchTerm && searchTerm.trim()) {
+      const term = `%${searchTerm}%`;
+      const normalizedTerm = searchTerm.replace(/[^a-zA-Z0-9]/g, '');
+
+      if (normalizedTerm.length > 0) {
+        query = query.or(`nome.ilike.${term},info.ilike.${term},codigo.ilike.${term},codigo_barra.ilike.${term},codigo.ilike.%${normalizedTerm}%`);
+      } else {
+        query = query.or(`nome.ilike.${term},info.ilike.${term},codigo.ilike.${term},codigo_barra.ilike.${term}`);
+      }
+    }
+
+    const { data, error } = await query.order('nome', { ascending: true }).order('codigo', { ascending: true });
+
+    if (error) {
+      console.error('Erro ao buscar produtos do Supabase:', error);
+      return { groups: [], total: 0, hasMore: false };
+    }
+
+    const productIds = data?.map(p => p.id) || [];
+    const { data: promotions } = await supabase
+      .from('promotions')
+      .select('product_id')
+      .in('product_id', productIds)
+      .eq('active', true);
+
+    const promotionSet = new Set(promotions?.map(p => p.product_id) || []);
+
+    const products = data ? data.map((item: any) => {
+      const categoryName = item.categories?.name || 'Sin Categoría';
+      return convertSupabaseProduct({
+        ...item,
+        category_id: item.category_id,
+        category_name: categoryName,
+        is_promotion: promotionSet.has(item.id)
+      });
+    }) : [];
+
+    const productMap = new Map<string, Product[]>();
+    products.forEach(product => {
+      const existing = productMap.get(product.nome) || [];
+      existing.push(product);
+      productMap.set(product.nome, existing);
+    });
+
+    const allGroups: ProductGroup[] = Array.from(productMap.entries()).map(([nome, variations]) => ({
+      nome,
+      variations,
+      totalVariations: variations.length
+    }));
+
+    const total = allGroups.length;
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize;
+    const groups = allGroups.slice(from, to);
+    const hasMore = to < total;
+
+    return { groups, total, hasMore };
+  } catch (err) {
+    console.error('Erro na conexão com Supabase:', err);
+    return { groups: [], total: 0, hasMore: false };
   }
 };
 
